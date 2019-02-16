@@ -10,16 +10,7 @@ export default class TaskItem extends Component {
     editingValue: null
   };
   input = React.createRef();
-  // toggleDone = () => {
-  //   this.setState(state => ({
-  //     done: !state.done
-  //   }));
-  // };
-  // toggleImportant = () => {
-  //   this.setState(state => ({
-  //     important: !state.important
-  //   }));
-  // };
+
   toggleEdit = () => {
     this.setState({
       isEditing: true,
@@ -64,24 +55,29 @@ export default class TaskItem extends Component {
   }
 
   render() {
-    const { text, done, deadline, priority } = this.props;
+    const {
+      text,
+      done,
+      deadline,
+      priority,
+      onDelete,
+      onToggleDone
+    } = this.props;
 
     const { isEditing, editingValue } = this.state;
-    let classNames = "task-item";
+    let itemClassNames = "task-item";
+    let buttonClassNames = "btn btn-outline-success btn-sm";
     if (done) {
-      classNames += " done";
-    }
-
-    if (priority === 1) {
-      classNames += " priority";
+      itemClassNames += " done";
+      buttonClassNames = "btn btn-success btn-sm";
     }
 
     return (
-      <div className={classNames}>
+      <div className={itemClassNames}>
         <button
           type="button"
-          className="btn btn-outline-success btn-sm"
-          // onClick={onToggleDone}
+          className={buttonClassNames}
+          onClick={onToggleDone}
         >
           <i className="fa fa-check" />
         </button>
@@ -129,7 +125,7 @@ export default class TaskItem extends Component {
         <button
           type="button"
           className="btn btn-outline-danger btn-sm"
-          // onClick={onDelete}
+          onClick={onDelete}
         >
           <i className="fa fa-trash-o" />
         </button>

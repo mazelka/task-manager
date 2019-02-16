@@ -1,42 +1,115 @@
 export default class ApiService {
-  apiBase = "http://localhost:3000/projects";
+  apiBase = "http://localhost:3000";
 
   getResource = async url => {
     const res = await fetch(`${this.apiBase}${url}`);
-
     if (!res.ok) {
-      throw new Error(`Could not fetch ${url}, received ${res.status}`);
+      throw new Error(`Could not fetch basics, received ${res.status}`);
     }
     return res.json();
   };
 
-  taskBody = task => {
-    return JSON.stringify({
-      data: {
-        attributes: task
-      }
-    });
-  };
+  getResourceByUrl;
 
-  updateTask = async (id, task) => {
-    const res = await fetch(`${this.apiBase}/1/tasks/${id}`, {
+  putResource = async (url, body) => {
+    const res = await fetch(`${this.apiBase}${url}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: this.taskBody(task)
+      body: body
     });
-
     if (!res.ok) {
-      throw new Error(`Could not fetch task ${id}, received ${res.status}`);
+      throw new Error(`Could not put to ${url}, received ${res.status}`);
+    }
+    const content = await res.json();
+    return content;
+  };
+
+  postResource = async (url, body) => {
+    const res = await fetch(`${this.apiBase}${url}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: body
+    });
+    if (!res.ok) {
+      throw new Error(`Could not post to ${url}, received ${res.status}`);
     }
     const content = await res.json();
     console.log(content);
     return content;
   };
-  returnTransformedTask = async (id, task) => {
-    const result = await this.updateTask(id, task);
+
+  deleteResource = async url => {
+    const res = await fetch(`${this.apiBase}${url}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" }
+    });
+    if (!res.ok) {
+      throw new Error(`Could not delete ${url}, received ${res.status}`);
+    }
+    const content = await res.status;
+    return content;
+  };
+
+  body = attr => {
+    return JSON.stringify({
+      data: {
+        attributes: attr
+      }
+    });
+  };
+  getProjectTasks = async id => {
+    const tasks = await this.getResource(`/projects/${id}/tasks`);
+    return this.normalizeTasks(tasks.data);
+  };
+
+  getProjects = async () => {
+    const projects = await this.getResource("/projects");
+    const project = this.normalizeProjects(projects.data);
+    console.log(project[0]);
+    return project[0];
+  };
+
+  updateTask = async (projectId, taskId, attribute) => {
+    // console.log(projectId, taskId, attribute);
+    const url = `/projects/${projectId}/tasks/${taskId}`;
+    const result = await this.putResource(url, this.body(attribute));
     const newTask = this.transformTask(result.data);
-    console.log(newTask);
     return newTask;
+  };
+
+  updateProject = async (id, attribute) => {
+    const body = this.body(attribute);
+    const url = `/projects/${id}`;
+    const result = await this.putResource(url, body);
+    const newProject = this.transformProject(result.data);
+    return newProject;
+  };
+
+  postTask = async (item, id) => {
+    const url = `/projects/${id}/tasks`;
+    const result = await this.postResource(url, this.body(item));
+    const newTask = this.transformTask(result.data);
+    return newTask;
+  };
+
+  deleteTask = async (projectId, taskId) => {
+    const url = `/projects/${projectId}/tasks/${taskId}`;
+    const result = await this.deleteResource(url);
+    return result;
+  };
+
+  deleteProject = async id => {
+    const url = `/projects/${id}`;
+    const result = await this.deleteResource(url);
+    return result;
+  };
+
+  normalizeTasks = tasks => {
+    return tasks.map(task => this.transformTask(task));
+  };
+
+  normalizeProjects = projects => {
+    return projects.map(project => this.transformProject(project));
   };
 
   transformTask = task => {
@@ -53,20 +126,14 @@ export default class ApiService {
     };
   };
 
-  normalizeTasks = tasks => {
-    return tasks.map(task => this.transformTask(task));
+  transformProject = project => {
+    const {
+      id,
+      attributes: { name }
+    } = project;
+    return {
+      id: id,
+      name: name
+    };
   };
-
-  getProjectTasks = async id => {
-    const tasks = await this.getResource(`/${id}/tasks`);
-    return this.normalizeTasks(tasks.data);
-  };
-  //   async run() {
-  //     const result = await getResource(
-  //       "http://localhost:3000/projects/1/tasks"
-  //     );
-  //     return result.data.forEach(task => {
-  //       console.log(transformTask(task));
-  //     });
-  //   }
 }

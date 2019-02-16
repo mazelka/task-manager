@@ -1,0 +1,17 @@
+.item-add-form {
+  margin-top: 10px;
+}
+
+.item-add-form input {
+  margin-right: 2px;
+  width: unset;
+  flex-grow: 2;
+}
+
+.error input.form-control {
+  border: 2px solid red;
+  margin-right: 2px;
+  width: unset;
+  flex-grow: 2;
+  box-shadow: unset;
+}
