@@ -48,6 +48,12 @@ export default class TaskItem extends Component {
     this.saveEditedLabel();
   };
 
+  priorityClassName = id => {
+    const { priority } = this.props;
+    if (priority === id) return "btn btn-secondary";
+    else return "btn btn-outline-secondary";
+  };
+
   componentDidUpdate(prevProps, prevState) {
     if (this.state.isEditing && !prevState.isEditing) {
       this.input.current.focus();
@@ -59,14 +65,17 @@ export default class TaskItem extends Component {
       text,
       done,
       deadline,
-      priority,
       onDelete,
-      onToggleDone
+      onToggleDone,
+      onChangeDeadline,
+      onChangePriority
     } = this.props;
 
     const { isEditing, editingValue } = this.state;
     let itemClassNames = "task-item";
+    const date = new Date();
     let buttonClassNames = "btn btn-outline-success btn-sm";
+
     if (done) {
       itemClassNames += " done";
       buttonClassNames = "btn btn-success btn-sm";
@@ -97,28 +106,36 @@ export default class TaskItem extends Component {
             {text}
           </span>
         )}
-        {deadline ? (
-          <DatePicker selected={deadline} />
-        ) : (
-          <button type="button" className="btn btn-outline-info btn-sm">
-            <i className="fa fa-calendar" />
-          </button>
-        )}
 
-        <div className="btn-group" role="group" aria-label="sorting">
+        <DatePicker
+          selected={deadline ? new Date(deadline) : date}
+          onChange={onChangeDeadline}
+        />
+
+        <div className="btn-group mr-2" role="group" aria-label="Second group">
           <button
             type="button"
-            className="btn btn-outline-secondary btn-sm"
-            // onClick={onToggleImportant}
+            id="1"
+            className={this.priorityClassName(1)}
+            onClick={() => onChangePriority(1)}
           >
-            <i className="fa fa-arrow-up" />
+            !
           </button>
           <button
             type="button"
-            className="btn btn-outline-secondary btn-sm"
-            // onClick={onToggleImportant}
+            id="2"
+            className={this.priorityClassName(2)}
+            onClick={() => onChangePriority(2)}
           >
-            <i className="fa fa-arrow-down" />
+            !!
+          </button>
+          <button
+            type="button"
+            id="3"
+            className={this.priorityClassName(3)}
+            onClick={() => onChangePriority(3)}
+          >
+            !!!
           </button>
         </div>
 

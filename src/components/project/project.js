@@ -59,9 +59,20 @@ export default class Project extends Component {
     const index = tasks.findIndex(el => el.id === id);
     const item = tasks[index];
     return {
-      ...item,
       done: !item.done
     };
+  };
+
+  changeDeadline = (id, date) => {
+    const { tasks } = this.state;
+    const index = tasks.findIndex(el => el.id === id);
+    const item = tasks[index];
+    const res = {
+      ...item,
+      deadline: date
+    };
+    console.log(res);
+    return res;
   };
 
   loadProject = async () => {
@@ -104,6 +115,7 @@ export default class Project extends Component {
   updateTask = async (id, attribute) => {
     const { project } = this.state;
     try {
+      console.log(attribute);
       const newTask = await this.apiService.updateTask(
         project.id,
         id,
@@ -117,6 +129,10 @@ export default class Project extends Component {
 
   handleToggleDone = async id => {
     this.updateTask(id, this.changeToggleDone(id));
+  };
+
+  handleChangeDeadline = async (id, date) => {
+    this.updateTask(id, { deadline: date });
   };
 
   deleteTask = async id => {
@@ -138,9 +154,25 @@ export default class Project extends Component {
       console.log(e);
     }
   };
+  onChangePriority = (id, value) => {
+    this.updateTask(id, { priority: value });
+  };
+
+  sortTasks = () => {
+    const { tasks } = this.state;
+    const done = tasks.filter(task => task.done === true);
+    const active = tasks.filter(task => task.done === false);
+    const sortedActive = active.sort(function(a, b) {
+      if (a.priority < b.priority) return -1;
+      if (a.priority > b.priority) return 1;
+      return 0;
+    });
+    return sortedActive.concat(done);
+  };
 
   render() {
-    const { tasks, project } = this.state;
+    const { project } = this.state;
+    const sortedTasks = this.sortTasks();
     if (!project) {
       return <Spinner />;
     }
@@ -148,10 +180,12 @@ export default class Project extends Component {
       <div className="task-app">
         <ProjectHeader text={project.name} onSave={this.updateProject} />
         <TaskList
-          tasks={tasks}
+          tasks={sortedTasks}
           onSave={this.updateTask}
           onDelete={this.deleteTask}
           onToggleDone={this.handleToggleDone}
+          onChangeDeadline={this.handleChangeDeadline}
+          onChangePriority={this.onChangePriority}
         />
         <AddTask onAddNewTask={this.addTask} />
       </div>

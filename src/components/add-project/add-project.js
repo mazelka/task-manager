@@ -1,11 +1,17 @@
 import React, { Component } from "react";
 
-import "./add-task.css";
+import "./add-project.css";
 
-export default class AddTask extends Component {
+export default class AddProject extends Component {
   state = {
+    active: true,
     text: "",
     error: false
+  };
+
+  changeActiveState = () => {
+    const { active } = this.state;
+    this.setState({ active: !active });
   };
 
   labelChange = e => {
@@ -33,19 +39,29 @@ export default class AddTask extends Component {
       return;
     }
 
-    this.props.onAddNewTask({ text: text });
+    this.props.onAddNewProject({ name: text });
     this.setState({
-      text: ""
+      text: "",
+      active: true
     });
   };
 
   render() {
-    const { error } = this.state;
-
+    const { error, active } = this.state;
+    if (active) {
+      return (
+        <button
+          className="btn btn-primary btn-lg"
+          onClick={this.changeActiveState}
+        >
+          Add New Project
+        </button>
+      );
+    }
     return (
       <form
         className={`" ${
-          error ? "item-add-form d-flex error" : "item-add-form d-flex"
+          error ? "project-add-form d-flex error" : "project-add-form d-flex"
         }`}
         onSubmit={this.submit}
         onBlur={this.focusOut}
@@ -55,9 +71,9 @@ export default class AddTask extends Component {
           className="form-control"
           value={this.state.text}
           onChange={this.labelChange}
-          placeholder="+ Add Task"
+          placeholder="+ Add Project"
         />
-        <button className="btn btn-info">Add</button>
+        <button className="btn btn-primary">Add Project</button>
       </form>
     );
   }

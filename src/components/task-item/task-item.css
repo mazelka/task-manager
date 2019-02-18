@@ -2,7 +2,7 @@
   font-size: 1rem;
   display: grid;
   align-items: center;
-  grid-template-columns: auto 1fr auto auto auto auto;
+  grid-template-columns: auto 1fr auto auto auto;
 }
 
 .task-item button {
@@ -44,4 +44,12 @@ input[type="date"] {
   width: 100%;
   padding-left: 10px;
   font-size: 1.2rem;
+}
+
+.custom-select {
+  width: 55px;
+  margin: 3px;
+  font-size: 1em;
+  height: 35px;
+  vertical-align: middle;
 }

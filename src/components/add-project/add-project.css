@@ -1,0 +1,23 @@
+.project-add-form {
+  /* margin-top: 20px; */
+  padding: 20px;
+}
+
+.project-add-form input {
+  margin-right: 2px;
+  width: unset;
+  flex-grow: 2;
+}
+
+.error input.form-control {
+  border: 2px solid red;
+  margin-right: 2px;
+  width: unset;
+  flex-grow: 2;
+  box-shadow: unset;
+}
+
+.add-project {
+  margin-top: 20px;
+  align-self: auto;
+}
