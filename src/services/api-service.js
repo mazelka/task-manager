@@ -64,9 +64,7 @@ export default class ApiService {
 
   getProjects = async () => {
     const projects = await this.getResource("/projects");
-    const project = this.normalizeProjects(projects.data);
-    console.log(project[0]);
-    return project[0];
+    return this.normalizeProjects(projects.data);
   };
 
   updateTask = async (projectId, taskId, attribute) => {
@@ -90,6 +88,13 @@ export default class ApiService {
     const result = await this.postResource(url, this.body(item));
     const newTask = this.transformTask(result.data);
     return newTask;
+  };
+
+  postProject = async name => {
+    const url = `/projects/`;
+    const result = await this.postResource(url, this.body(name));
+    const newProject = this.transformProject(result.data);
+    return newProject;
   };
 
   deleteTask = async (projectId, taskId) => {

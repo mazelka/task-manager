@@ -8,8 +8,8 @@ import Spinner from "../spinner";
 
 export default class Project extends Component {
   state = {
+    loading: true,
     error: false,
-    project: null,
     tasks: []
   };
   apiService = new ApiService();
@@ -35,20 +35,10 @@ export default class Project extends Component {
   };
 
   getProjectTasks = async () => {
-    const { project } = this.state;
+    const { project } = this.props;
     try {
       const res = await this.apiService.getProjectTasks(project.id);
       this.onTasksLoaded(res);
-    } catch (e) {
-      this.onError(e);
-    }
-  };
-
-  getProjects = async () => {
-    try {
-      const res = await this.apiService.getProjects();
-      this.onProjectLoaded(res);
-      return res.id;
     } catch (e) {
       this.onError(e);
     }
@@ -76,7 +66,7 @@ export default class Project extends Component {
   };
 
   loadProject = async () => {
-    const id = await this.getProjects();
+    const { id } = this.props.project.id;
     await this.getProjectTasks(id);
   };
 
@@ -85,7 +75,7 @@ export default class Project extends Component {
   }
 
   addTask = async text => {
-    const { project } = this.state;
+    const { project } = this.props;
     try {
       const newTask = await this.apiService.postTask(text, project.id);
       this.onTaskAdded(newTask);
@@ -113,7 +103,7 @@ export default class Project extends Component {
   };
 
   updateTask = async (id, attribute) => {
-    const { project } = this.state;
+    const { project } = this.props;
     try {
       console.log(attribute);
       const newTask = await this.apiService.updateTask(
@@ -136,7 +126,7 @@ export default class Project extends Component {
   };
 
   deleteTask = async id => {
-    const { project } = this.state;
+    const { project } = this.props;
     try {
       await this.apiService.deleteTask(project.id, id);
       this.onTaskDeleted(id);
@@ -145,15 +135,6 @@ export default class Project extends Component {
     }
   };
 
-  updateProject = async name => {
-    const { id } = this.state.project;
-    try {
-      const newProject = await this.apiService.updateProject(id, name);
-      this.onProjectLoaded(newProject);
-    } catch (e) {
-      console.log(e);
-    }
-  };
   onChangePriority = (id, value) => {
     this.updateTask(id, { priority: value });
   };
@@ -171,14 +152,19 @@ export default class Project extends Component {
   };
 
   render() {
-    const { project } = this.state;
+    const { project, onUpdate, onDelete } = this.props;
     const sortedTasks = this.sortTasks();
+
     if (!project) {
       return <Spinner />;
     }
     return (
       <div className="task-app">
-        <ProjectHeader text={project.name} onSave={this.updateProject} />
+        <ProjectHeader
+          text={project.name}
+          onUpdate={name => onUpdate(name)}
+          onDelete={onDelete}
+        />
         <TaskList
           tasks={sortedTasks}
           onSave={this.updateTask}

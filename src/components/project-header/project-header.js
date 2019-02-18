@@ -31,7 +31,8 @@ export default class ProjectHeader extends Component {
   saveEditedLabel = () => {
     const { editingValue } = this.state;
     if (editingValue !== "") {
-      this.props.onSave({ name: editingValue });
+      console.log("saveEditedllbl");
+      this.props.onUpdate({ name: editingValue });
 
       this.setState({
         isEditing: false,
@@ -57,7 +58,7 @@ export default class ProjectHeader extends Component {
   }
 
   render() {
-    const { text } = this.props;
+    const { text, onDelete } = this.props;
     const { isEditing, editingValue } = this.state;
 
     if (!text) {
@@ -85,7 +86,7 @@ export default class ProjectHeader extends Component {
         <button
           type="button"
           className="btn btn-outline-danger btn-sm"
-          //   onClick={onDelete}
+          onClick={onDelete}
         >
           <i className="fa fa-trash-o" />
         </button>
