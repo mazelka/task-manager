@@ -85,7 +85,7 @@ export default class ProjectHeader extends Component {
 
         <button
           type="button"
-          className="btn btn-outline-danger btn-sm"
+          className="btn btn-primary my-2 my-sm-0"
           onClick={onDelete}
         >
           <i className="fa fa-trash-o" />

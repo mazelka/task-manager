@@ -2,7 +2,12 @@ export default class ApiService {
   apiBase = "http://localhost:3000";
 
   getResource = async url => {
-    const res = await fetch(`${this.apiBase}${url}`);
+    const res = await fetch(`${this.apiBase}${url}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: localStorage.getItem("token")
+      }
+    });
     if (!res.ok) {
       throw new Error(`Could not fetch basics, received ${res.status}`);
     }
@@ -27,7 +32,10 @@ export default class ApiService {
   postResource = async (url, body) => {
     const res = await fetch(`${this.apiBase}${url}`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: localStorage.getItem("token")
+      },
       body: body
     });
     if (!res.ok) {
@@ -50,6 +58,20 @@ export default class ApiService {
     return content;
   };
 
+  postSession = async body => {
+    const res = await fetch(`${this.apiBase}/user_token`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: body
+    });
+    if (!res.ok) {
+      throw new Error(`Could not login, received ${res.status}`);
+    }
+    const content = await res.json();
+    console.log(content);
+    return content;
+  };
+
   body = attr => {
     return JSON.stringify({
       data: {
@@ -57,6 +79,16 @@ export default class ApiService {
       }
     });
   };
+
+  credentials = (email, password) => {
+    return JSON.stringify({
+      auth: {
+        email,
+        password
+      }
+    });
+  };
+
   getProjectTasks = async id => {
     const tasks = await this.getResource(`/projects/${id}/tasks`);
     return this.normalizeTasks(tasks.data);
@@ -103,6 +135,13 @@ export default class ApiService {
     return result;
   };
 
+  userLogin = async (email, password) => {
+    const url = "/user_token";
+    const body = this.credentials(email, password);
+    console.log(body);
+    const token = this.postResource(url, body);
+    return token;
+  };
   deleteProject = async id => {
     const url = `/projects/${id}`;
     const result = await this.deleteResource(url);

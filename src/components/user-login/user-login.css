@@ -1,0 +1,8 @@
+.user-login {
+  margin: 2rem auto 0 auto;
+  max-width: 400px;
+}
+.user-login .user-btn {
+  text-align: center;
+  margin-top: 10px;
+}

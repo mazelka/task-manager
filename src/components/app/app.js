@@ -4,11 +4,14 @@ import AddProject from "../add-project/add-project";
 import Project from "../project";
 import Spinner from "../spinner";
 import ApiService from "../../services/api-service";
+import UserHeader from "../user-header/user-header";
+import UserLogin from "../user-login/user-login";
 
 export default class App extends Component {
   state = {
     error: false,
     loading: false,
+    authorized: false,
     projects: []
   };
 
@@ -88,12 +91,25 @@ export default class App extends Component {
     }
   };
 
-  componentDidMount() {
-    this.getProjects();
-  }
+  login = async (email, password) => {
+    const token = await this.apiService.userLogin(email, password);
+    await this.setToken(token);
+    this.setState({
+      authorized: true
+    });
+  };
+
+  setToken = token => {
+    console.log(token.jwt);
+    localStorage.setItem("token", `Bearer ${token.jwt}`);
+  };
+
+  //   componentDidMount() {
+  //     this.getProjects();
+  //   }
 
   render() {
-    const { projects } = this.state;
+    const { projects, authorized } = this.state;
 
     if (!projects) {
       return <Spinner />;
@@ -111,10 +127,14 @@ export default class App extends Component {
     });
 
     return (
-      <div className="project-app">
-        {elements}
-        <div className="add-project">
-          <AddProject onAddNewProject={this.addNewProject} />
+      <div>
+        {/* <div className="invalid-feedback" value={loginError} /> */}
+        <UserLogin authorized={authorized} onLogin={this.login} />
+        <div className="project-app">
+          {elements}
+          <div className="add-project">
+            <AddProject onAddNewProject={this.addNewProject} />
+          </div>
         </div>
       </div>
     );
