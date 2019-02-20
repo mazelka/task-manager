@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import ApiService from "../../services/api-service";
 
 import "./user-login.css";
 
@@ -8,6 +9,7 @@ export default class UserLogin extends Component {
     email: "",
     password: ""
   };
+  apiService = new ApiService();
 
   emailChange = e => {
     this.setState({
@@ -34,12 +36,25 @@ export default class UserLogin extends Component {
       });
       return;
     }
+    console.log(email, password);
+    this.login(email, password);
 
-    this.props.onLogin(email, password);
     this.setState({
       email: "",
       password: ""
     });
+  };
+
+  login = async (email, password) => {
+    console.log("inLogin ", email, password);
+    const token = await this.apiService.userLogin(email, password);
+    await this.setToken(token);
+  };
+
+  setToken = token => {
+    console.log(token.jwt);
+    localStorage.setItem("token", `Bearer ${token.jwt}`);
+    this.props.onLogin();
   };
 
   render() {
