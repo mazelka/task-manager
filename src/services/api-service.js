@@ -14,16 +14,17 @@ export default class ApiService {
     return res.json();
   };
 
-  getResourceByUrl;
-
   putResource = async (url, body) => {
     const res = await fetch(`${this.apiBase}${url}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: localStorage.getItem("token")
+      },
       body: body
     });
     if (!res.ok) {
-      throw new Error(`Could not put to ${url}, received ${res.status}`);
+      return `Oooops, error with your request! try again?`;
     }
     const content = await res.json();
     return content;
@@ -38,8 +39,9 @@ export default class ApiService {
       },
       body: body
     });
+    console.log(body);
     if (!res.ok) {
-      throw new Error(`Could not post to ${url}, received ${res.status}`);
+      return Error(`Could not post to ${url}, received ${res.status}`);
     }
     const content = await res.json();
     console.log(content);
@@ -49,7 +51,10 @@ export default class ApiService {
   deleteResource = async url => {
     const res = await fetch(`${this.apiBase}${url}`, {
       method: "DELETE",
-      headers: { "Content-Type": "application/json" }
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: localStorage.getItem("token")
+      }
     });
     if (!res.ok) {
       throw new Error(`Could not delete ${url}, received ${res.status}`);
@@ -79,6 +84,13 @@ export default class ApiService {
       }
     });
   };
+  createBody = (email, password) => {
+    return JSON.stringify({
+      data: {
+        attributes: { email, password }
+      }
+    });
+  };
 
   credentials = (email, password) => {
     return JSON.stringify({
@@ -87,6 +99,14 @@ export default class ApiService {
         password
       }
     });
+  };
+
+  createUser = async (email, password) => {
+    const res = await this.postResource(
+      `/users/create`,
+      this.createBody(email, password)
+    );
+    return res;
   };
 
   getProjectTasks = async id => {
@@ -142,6 +162,7 @@ export default class ApiService {
     const token = this.postResource(url, body);
     return token;
   };
+
   deleteProject = async id => {
     const url = `/projects/${id}`;
     const result = await this.deleteResource(url);

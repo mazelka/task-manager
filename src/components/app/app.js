@@ -21,7 +21,18 @@ export default class App extends Component {
       authorized: true
     });
   };
+  onLogout = () => {
+    localStorage.removeItem("token");
+    this.setState({
+      authorized: false
+    });
+  };
 
+  componentDidMount() {
+    if (localStorage.getItem("token")) {
+      this.setState({ authorized: true });
+    }
+  }
   render() {
     const { authorized } = this.state;
 
@@ -31,7 +42,7 @@ export default class App extends Component {
 
     return (
       <div>
-        <UserProjects />
+        <UserProjects onLogout={this.onLogout} />
       </div>
     );
   }

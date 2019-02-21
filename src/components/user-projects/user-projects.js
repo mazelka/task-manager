@@ -95,6 +95,7 @@ export default class UserProjects extends Component {
 
   render() {
     const { projects } = this.state;
+    const { onLogout } = this.props;
 
     if (!projects) {
       return <Spinner />;
@@ -114,7 +115,7 @@ export default class UserProjects extends Component {
     return (
       <div>
         {/* <div className="invalid-feedback" value={loginError} /> */}
-        <UserHeader />
+        <UserHeader onLogout={onLogout} />
         <div className="project-app">
           {elements}
           <div className="add-project">

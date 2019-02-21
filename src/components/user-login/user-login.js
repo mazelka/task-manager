@@ -7,7 +7,8 @@ export default class UserLogin extends Component {
   state = {
     error: false,
     email: "",
-    password: ""
+    password: "",
+    message: ""
   };
   apiService = new ApiService();
 
@@ -25,7 +26,7 @@ export default class UserLogin extends Component {
     });
   };
 
-  submit = e => {
+  createUser = e => {
     e.preventDefault();
 
     const { email, password } = this.state;
@@ -36,7 +37,29 @@ export default class UserLogin extends Component {
       });
       return;
     }
+    this.signUp(email, password);
+    this.login(email, password);
+
+    this.setState({
+      email: "",
+      password: ""
+    });
+  };
+
+  submit = e => {
+    e.preventDefault();
+    const { email, password } = this.state;
+
+    if (email === "" || password === "") {
+      this.setState({
+        error: true
+      });
+      return;
+    }
     console.log(email, password);
+    if (e.target.id.includes("signup")) {
+      this.signUp(email, password);
+    }
     this.login(email, password);
 
     this.setState({
@@ -49,6 +72,17 @@ export default class UserLogin extends Component {
     console.log("inLogin ", email, password);
     const token = await this.apiService.userLogin(email, password);
     await this.setToken(token);
+  };
+
+  signUp = async (email, password) => {
+    console.log("inSignUp ", email, password);
+    const res = await this.apiService.createUser(email, password);
+    if (!res.ok) {
+      this.setState({
+        message: res
+      });
+    }
+    console.log(res); //response body
   };
 
   setToken = token => {
@@ -82,15 +116,31 @@ export default class UserLogin extends Component {
             type="password"
             value={password}
             onChange={this.passwordChange}
-            className="form-control is-invalid"
+            className={`" ${
+              error ? "form-control is-invalid" : "form-control d-flex"
+            }`}
             id="inputInvalid"
           />
-          <div className="invalid-feedback">
-            Sorry, that username's taken. Try another?
+          <div className="invalid-feedback">{this.state.message}</div>
+          <div className="user-btn">
+            <button
+              className="btn btn-primary"
+              id="signin"
+              onClick={this.submit}
+            >
+              Sign In
+            </button>
+          </div>
+          <div id="no-account">
+            <span>Do not have account?</span>
           </div>
           <div className="user-btn">
-            <button className="btn btn-primary" onClick={this.submit}>
-              Start Using App
+            <button
+              className="btn btn-secondary"
+              id="signup"
+              onClick={this.submit}
+            >
+              Sign Up
             </button>
           </div>
         </div>
