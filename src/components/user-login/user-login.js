@@ -26,27 +26,7 @@ export default class UserLogin extends Component {
     });
   };
 
-  createUser = e => {
-    e.preventDefault();
-
-    const { email, password } = this.state;
-
-    if (email === "" || password === "") {
-      this.setState({
-        error: true
-      });
-      return;
-    }
-    this.signUp(email, password);
-    this.login(email, password);
-
-    this.setState({
-      email: "",
-      password: ""
-    });
-  };
-
-  submit = e => {
+  authorize = e => {
     e.preventDefault();
     const { email, password } = this.state;
 
@@ -56,11 +36,12 @@ export default class UserLogin extends Component {
       });
       return;
     }
-    console.log(email, password);
+    console.log({ email, password });
     if (e.target.id.includes("signup")) {
-      this.signUp(email, password);
+      this.signUp({ email, password });
+    } else {
+      this.login({ email, password });
     }
-    this.login(email, password);
 
     this.setState({
       email: "",
@@ -69,20 +50,13 @@ export default class UserLogin extends Component {
   };
 
   login = async (email, password) => {
-    console.log("inLogin ", email, password);
     const token = await this.apiService.userLogin(email, password);
     await this.setToken(token);
   };
 
   signUp = async (email, password) => {
-    console.log("inSignUp ", email, password);
-    const res = await this.apiService.createUser(email, password);
-    if (!res.ok) {
-      this.setState({
-        message: res
-      });
-    }
-    console.log(res); //response body
+    const token = await this.apiService.createUser(email, password);
+    await this.setToken(token); //response body
   };
 
   setToken = token => {
@@ -126,7 +100,7 @@ export default class UserLogin extends Component {
             <button
               className="btn btn-primary"
               id="signin"
-              onClick={this.submit}
+              onClick={this.authorize}
             >
               Sign In
             </button>
@@ -138,7 +112,7 @@ export default class UserLogin extends Component {
             <button
               className="btn btn-secondary"
               id="signup"
-              onClick={this.submit}
+              onClick={this.authorize}
             >
               Sign Up
             </button>

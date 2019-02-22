@@ -1,12 +1,22 @@
 export default class ApiService {
   apiBase = "http://localhost:3000";
 
+  headers = new Headers({
+    "Content-Type": "application/json",
+    Authorization: localStorage.getItem("token")
+  });
+
+  transformInit = (method, body) => {
+    return {
+      method: method,
+      headers: this.headers,
+      body: this.body(body)
+    };
+  };
+
   getResource = async url => {
     const res = await fetch(`${this.apiBase}${url}`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: localStorage.getItem("token")
-      }
+      headers: this.headers
     });
     if (!res.ok) {
       throw new Error(`Could not fetch basics, received ${res.status}`);
@@ -15,14 +25,10 @@ export default class ApiService {
   };
 
   putResource = async (url, body) => {
-    const res = await fetch(`${this.apiBase}${url}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: localStorage.getItem("token")
-      },
-      body: body
-    });
+    const res = await fetch(
+      `${this.apiBase}${url}`,
+      this.transformInit("PUT", body)
+    );
     if (!res.ok) {
       return `Oooops, error with your request! try again?`;
     }
@@ -31,49 +37,27 @@ export default class ApiService {
   };
 
   postResource = async (url, body) => {
-    const res = await fetch(`${this.apiBase}${url}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: localStorage.getItem("token")
-      },
-      body: body
-    });
+    const res = await fetch(
+      `${this.apiBase}${url}`,
+      this.transformInit("POST", body)
+    );
     console.log(body);
     if (!res.ok) {
       return Error(`Could not post to ${url}, received ${res.status}`);
     }
     const content = await res.json();
-    console.log(content);
     return content;
   };
 
   deleteResource = async url => {
     const res = await fetch(`${this.apiBase}${url}`, {
       method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: localStorage.getItem("token")
-      }
+      headers: this.headers
     });
     if (!res.ok) {
       throw new Error(`Could not delete ${url}, received ${res.status}`);
     }
     const content = await res.status;
-    return content;
-  };
-
-  postSession = async body => {
-    const res = await fetch(`${this.apiBase}/user_token`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: body
-    });
-    if (!res.ok) {
-      throw new Error(`Could not login, received ${res.status}`);
-    }
-    const content = await res.json();
-    console.log(content);
     return content;
   };
 
@@ -84,29 +68,14 @@ export default class ApiService {
       }
     });
   };
-  createBody = (email, password) => {
-    return JSON.stringify({
-      data: {
-        attributes: { email, password }
-      }
-    });
-  };
 
-  credentials = (email, password) => {
-    return JSON.stringify({
-      auth: {
-        email,
-        password
-      }
-    });
-  };
-
-  createUser = async (email, password) => {
-    const res = await this.postResource(
-      `/users/create`,
-      this.createBody(email, password)
-    );
-    return res;
+  createUser = async credentials => {
+    const res = await this.postResource(`/users/create`, credentials);
+    if (res.data) {
+      return this.userLogin(credentials);
+    } else {
+      console.log(res);
+    }
   };
 
   getProjectTasks = async id => {
@@ -120,46 +89,42 @@ export default class ApiService {
   };
 
   updateTask = async (projectId, taskId, attribute) => {
-    // console.log(projectId, taskId, attribute);
-    const url = `/projects/${projectId}/tasks/${taskId}`;
-    const result = await this.putResource(url, this.body(attribute));
+    const result = await this.putResource(
+      `/projects/${projectId}/tasks/${taskId}`,
+      attribute
+    );
     const newTask = this.transformTask(result.data);
     return newTask;
   };
 
   updateProject = async (id, attribute) => {
-    const body = this.body(attribute);
-    const url = `/projects/${id}`;
-    const result = await this.putResource(url, body);
+    const result = await this.putResource(`/projects/${id}`, attribute);
     const newProject = this.transformProject(result.data);
     return newProject;
   };
 
   postTask = async (item, id) => {
-    const url = `/projects/${id}/tasks`;
-    const result = await this.postResource(url, this.body(item));
+    const result = await this.postResource(`/projects/${id}/tasks`, item);
     const newTask = this.transformTask(result.data);
     return newTask;
   };
 
   postProject = async name => {
-    const url = `/projects/`;
-    const result = await this.postResource(url, this.body(name));
+    const result = await this.postResource(`/projects/`, name);
     const newProject = this.transformProject(result.data);
     return newProject;
   };
 
   deleteTask = async (projectId, taskId) => {
-    const url = `/projects/${projectId}/tasks/${taskId}`;
-    const result = await this.deleteResource(url);
+    const result = await this.deleteResource(
+      `/projects/${projectId}/tasks/${taskId}`
+    );
     return result;
   };
 
-  userLogin = async (email, password) => {
-    const url = "/user_token";
-    const body = this.credentials(email, password);
-    console.log(body);
-    const token = this.postResource(url, body);
+  userLogin = async credentials => {
+    console.log("api-service user login", credentials);
+    const token = this.postResource("/user_token", credentials);
     return token;
   };
 
