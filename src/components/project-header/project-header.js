@@ -48,7 +48,9 @@ export default class ProjectHeader extends Component {
   };
 
   handleFocusOut = () => {
-    this.saveEditedLabel();
+    this.setState({
+      isEditing: false
+    });
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -86,7 +88,14 @@ export default class ProjectHeader extends Component {
         <button
           type="button"
           className="btn btn-primary my-2 my-sm-0"
-          onClick={onDelete}
+          onClick={() => {
+            if (
+              window.confirm(
+                "Are you sure you want to delete this project and all its tasks?"
+              )
+            )
+              onDelete();
+          }}
         >
           <i className="fa fa-trash-o" />
         </button>

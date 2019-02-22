@@ -20,7 +20,6 @@ export default class TaskItem extends Component {
 
   handleChange = e => {
     const editingValue = e.target.value;
-
     this.setState({
       editingValue
     });
@@ -28,12 +27,16 @@ export default class TaskItem extends Component {
 
   saveEditedLabel = () => {
     const { editingValue } = this.state;
+
     if (editingValue !== "") {
       this.props.onSave({ text: editingValue });
-
       this.setState({
         isEditing: false,
         editingValue: null
+      });
+    } else {
+      this.setState({
+        isEditing: false
       });
     }
   };

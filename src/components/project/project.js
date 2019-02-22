@@ -4,12 +4,9 @@ import ApiService from "../../services/api-service";
 import AddTask from "../add-task/add-task";
 import ProjectHeader from "../project-header";
 import "./project.css";
-import Spinner from "../spinner";
 
 export default class Project extends Component {
   state = {
-    loading: true,
-    error: false,
     tasks: []
   };
   apiService = new ApiService();
@@ -38,9 +35,10 @@ export default class Project extends Component {
     const { project } = this.props;
     try {
       const res = await this.apiService.getProjectTasks(project.id);
+      console.log(project.id);
       this.onTasksLoaded(res);
     } catch (e) {
-      this.onError(e);
+      this.props.onError(e);
     }
   };
 
@@ -80,7 +78,7 @@ export default class Project extends Component {
       const newTask = await this.apiService.postTask(text, project.id);
       this.onTaskAdded(newTask);
     } catch (e) {
-      console.log(e);
+      this.props.onError(e);
     }
   };
 
@@ -113,7 +111,7 @@ export default class Project extends Component {
       );
       this.onTaskUpdated(newTask);
     } catch (e) {
-      console.log(e);
+      this.props.onError(e);
     }
   };
 
@@ -131,7 +129,7 @@ export default class Project extends Component {
       await this.apiService.deleteTask(project.id, id);
       this.onTaskDeleted(id);
     } catch (e) {
-      console.log(e);
+      this.props.onError(e);
     }
   };
 
@@ -155,9 +153,6 @@ export default class Project extends Component {
     const { project, onUpdate, onDelete } = this.props;
     const sortedTasks = this.sortTasks();
 
-    if (!project) {
-      return <Spinner />;
-    }
     return (
       <div className="task-app">
         <ProjectHeader

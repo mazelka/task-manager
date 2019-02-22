@@ -19,7 +19,7 @@ export default class ApiService {
       headers: this.headers
     });
     if (!res.ok) {
-      throw new Error(`Could not fetch basics, received ${res.status}`);
+      throw new Error(`Could not fetch basic, received ${res.status}`);
     }
     return res.json();
   };
@@ -30,7 +30,7 @@ export default class ApiService {
       this.transformInit("PUT", body)
     );
     if (!res.ok) {
-      return `Oooops, error with your request! try again?`;
+      throw new Error(`Could not put to ${url}, received ${res.status}`);
     }
     const content = await res.json();
     return content;
@@ -43,7 +43,7 @@ export default class ApiService {
     );
     console.log(body);
     if (!res.ok) {
-      return Error(`Could not post to ${url}, received ${res.status}`);
+      throw new Error(`Could not post to ${url}, received ${res.status}`);
     }
     const content = await res.json();
     return content;

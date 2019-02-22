@@ -5,6 +5,7 @@ import Project from "../project";
 import Spinner from "../spinner";
 import ApiService from "../../services/api-service";
 import UserHeader from "../user-header/user-header";
+import ErrorIndicator from "../error-indicator/error-indicator";
 
 export default class UserProjects extends Component {
   state = {
@@ -22,7 +23,8 @@ export default class UserProjects extends Component {
   onProjectAdded = newProject => {
     this.setState(({ projects }) => {
       return {
-        projects: [...projects, newProject]
+        projects: [...projects, newProject],
+        error: false
       };
     });
   };
@@ -35,8 +37,7 @@ export default class UserProjects extends Component {
         project,
         ...projects.slice(index + 1)
       ];
-      console.log(newProjects);
-      return { projects: newProjects };
+      return { projects: newProjects, error: false };
     });
   };
 
@@ -48,7 +49,8 @@ export default class UserProjects extends Component {
         ...projects.slice(index + 1)
       ];
       return {
-        projects: newProjects
+        projects: newProjects,
+        error: false
       };
     });
   };
@@ -58,7 +60,7 @@ export default class UserProjects extends Component {
       const projects = await this.apiService.getProjects();
       this.onProjectLoaded(projects);
     } catch (e) {
-      console.log(e);
+      this.onError(e);
     }
   };
 
@@ -66,8 +68,9 @@ export default class UserProjects extends Component {
     try {
       const updatedProject = await this.apiService.updateProject(id, name);
       this.onProjectsUpdated(updatedProject);
+      console.log(this.state.error);
     } catch (e) {
-      console.log(e);
+      this.onError(e);
     }
   };
 
@@ -76,7 +79,7 @@ export default class UserProjects extends Component {
       await this.apiService.deleteProject(id);
       this.onProjectDeleted(id);
     } catch (e) {
-      console.log(e);
+      this.onError(e);
     }
   };
 
@@ -85,8 +88,14 @@ export default class UserProjects extends Component {
       const newProject = await this.apiService.postProject(name);
       this.onProjectAdded(newProject);
     } catch (e) {
-      console.log(e);
+      this.onError(e);
     }
+  };
+
+  onError = e => {
+    this.setState({
+      error: true
+    });
   };
 
   componentDidMount() {
@@ -94,12 +103,8 @@ export default class UserProjects extends Component {
   }
 
   render() {
-    const { projects } = this.state;
+    const { projects, error } = this.state;
     const { onLogout } = this.props;
-
-    if (!projects) {
-      return <Spinner />;
-    }
 
     const elements = projects.map(project => {
       return (
@@ -108,14 +113,15 @@ export default class UserProjects extends Component {
           project={project}
           onUpdate={name => this.updateProject(project.id, name)}
           onDelete={() => this.onDelete(project.id)}
+          onError={this.onError}
         />
       );
     });
 
     return (
       <div>
-        {/* <div className="invalid-feedback" value={loginError} /> */}
         <UserHeader onLogout={onLogout} />
+        {error ? <ErrorIndicator /> : null}
         <div className="project-app">
           {elements}
           <div className="add-project">

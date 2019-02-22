@@ -2,7 +2,13 @@
   margin: 2rem auto 0 auto;
   max-width: 400px;
 }
-.user-login .user-btn {
+.user-btn {
   text-align: center;
   margin-top: 10px;
+}
+.user-login label {
+  margin-top: 10px;
+}
+.user-login input {
+  margin-bottom: 20px;
 }

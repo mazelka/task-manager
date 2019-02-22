@@ -5,7 +5,7 @@ import "./add-project.css";
 export default class AddProject extends Component {
   state = {
     active: true,
-    text: "",
+    name: "",
     error: false
   };
 
@@ -14,15 +14,9 @@ export default class AddProject extends Component {
     this.setState({ active: !active });
   };
 
-  labelChange = e => {
+  changeName = e => {
     this.setState({
-      text: e.target.value,
-      error: false
-    });
-  };
-
-  focusOut = () => {
-    this.setState({
+      name: e.target.value,
       error: false
     });
   };
@@ -30,19 +24,24 @@ export default class AddProject extends Component {
   submit = e => {
     e.preventDefault();
 
-    const { text } = this.state;
+    const { name } = this.state;
 
-    if (text === "") {
+    if (name === "") {
       this.setState({
         error: true
       });
       return;
     }
 
-    this.props.onAddNewProject({ name: text });
+    this.props.onAddNewProject({ name: name });
     this.setState({
-      text: "",
+      name: "",
       active: true
+    });
+  };
+  focusOut = () => {
+    this.setState({
+      error: false
     });
   };
 
@@ -69,8 +68,8 @@ export default class AddProject extends Component {
         <input
           type="text"
           className="form-control"
-          value={this.state.text}
-          onChange={this.labelChange}
+          value={this.state.name}
+          onChange={this.changeName}
           placeholder="+ Add Project"
         />
         <button className="btn btn-primary">Add Project</button>
