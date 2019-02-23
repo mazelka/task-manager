@@ -12,3 +12,6 @@
 .user-login input {
   margin-bottom: 20px;
 }
+.user-login button {
+  margin: 20px;
+}

@@ -23,23 +23,21 @@ export default class AddProject extends Component {
 
   submit = e => {
     e.preventDefault();
-
     const { name } = this.state;
-
     if (name === "") {
       this.setState({
         error: true
       });
       return;
     }
-
     this.props.onAddNewProject({ name: name });
     this.setState({
       name: "",
       active: true
     });
   };
-  focusOut = () => {
+
+  clearError = () => {
     this.setState({
       error: false
     });
@@ -59,11 +57,11 @@ export default class AddProject extends Component {
     }
     return (
       <form
-        className={`" ${
+        className={`${
           error ? "project-add-form d-flex error" : "project-add-form d-flex"
         }`}
         onSubmit={this.submit}
-        onBlur={this.focusOut}
+        onBlur={this.clearError}
       >
         <input
           type="text"

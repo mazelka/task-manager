@@ -12,14 +12,38 @@ export default class UserLogin extends Component {
   };
   apiService = new ApiService();
 
-  emailChange = e => {
+  signIn = () => {
+    if (!this.validateInput()) {
+      return;
+    }
+    const { email, password } = this.state;
+    this.signInUser({ email, password });
+    this.setState({
+      email: "",
+      password: ""
+    });
+  };
+
+  signUp = e => {
+    if (!this.validateInput()) {
+      return;
+    }
+    const { email, password } = this.state;
+    this.signUpUser({ email, password });
+    this.setState({
+      email: "",
+      password: ""
+    });
+  };
+
+  changeEmailValue = e => {
     this.setState({
       email: e.target.value,
       error: false
     });
   };
 
-  passwordChange = e => {
+  changePasswordValue = e => {
     this.setState({
       password: e.target.value,
       error: false
@@ -32,30 +56,7 @@ export default class UserLogin extends Component {
     });
   };
 
-  authorize = e => {
-    e.preventDefault();
-    const { email, password } = this.state;
-
-    if (email === "" || password === "") {
-      this.setState({
-        error: true
-      });
-      return;
-    }
-    console.log({ email, password });
-    if (e.target.id.includes("signup")) {
-      this.signUp({ email, password });
-    } else {
-      this.login({ email, password });
-    }
-
-    this.setState({
-      email: "",
-      password: ""
-    });
-  };
-
-  login = async (email, password) => {
+  signInUser = async (email, password) => {
     try {
       const token = await this.apiService.userLogin(email, password);
       await this.setToken(token);
@@ -64,7 +65,7 @@ export default class UserLogin extends Component {
     }
   };
 
-  signUp = async (email, password) => {
+  signUpUser = async (email, password) => {
     try {
       const token = await this.apiService.createUser(email, password);
       await this.setToken(token);
@@ -74,13 +75,29 @@ export default class UserLogin extends Component {
   };
 
   setToken = token => {
-    console.log(token.jwt);
     localStorage.setItem("token", `Bearer ${token.jwt}`);
     this.props.onLogin();
   };
 
+  validateInput = () => {
+    const { email, password } = this.state;
+    if (email === "" || password === "") {
+      this.setState({
+        error: true
+      });
+      return false;
+    }
+    return true;
+  };
+
   render() {
     const { email, password, error } = this.state;
+
+    let inputClassName = "form-control d-flex";
+    if (error) {
+      inputClassName += " is-invalid";
+    }
+
     return (
       <div className="form-group user-login">
         <div className="list-group-item list-group-item-action active project-item">
@@ -91,10 +108,8 @@ export default class UserLogin extends Component {
         <input
           type="email"
           value={email}
-          onChange={this.emailChange}
-          className={`${
-            error ? "form-control is-invalid" : "form-control d-flex"
-          }`}
+          onChange={this.changeEmailValue}
+          className={inputClassName}
         />
         <label className="form-control-label">
           Enter your password (min 6 characters)
@@ -102,29 +117,15 @@ export default class UserLogin extends Component {
         <input
           type="password"
           value={password}
-          onChange={this.passwordChange}
-          className={`${
-            error ? "form-control is-invalid" : "form-control d-flex"
-          }`}
+          onChange={this.changePasswordValue}
+          className={inputClassName}
         />
         <div className="user-btn">
-          <button
-            className="btn btn-primary"
-            id="signin"
-            onClick={this.authorize}
-          >
+          <button className="btn btn-primary" onClick={this.signIn}>
             Sign In
           </button>
-        </div>
-        <div id="no-account">
-          <span>Do not have account?</span>
-        </div>
-        <div className="user-btn">
-          <button
-            className="btn btn-secondary"
-            id="signup"
-            onClick={this.authorize}
-          >
+          <span>OR</span>
+          <button className="btn btn-secondary" onClick={this.signUp}>
             Sign Up
           </button>
         </div>

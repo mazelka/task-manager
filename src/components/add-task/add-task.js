@@ -8,14 +8,14 @@ export default class AddTask extends Component {
     error: false
   };
 
-  labelChange = e => {
+  changeText = e => {
     this.setState({
       text: e.target.value,
       error: false
     });
   };
 
-  focusOut = () => {
+  clearError = () => {
     this.setState({
       error: false
     });
@@ -23,16 +23,13 @@ export default class AddTask extends Component {
 
   submit = e => {
     e.preventDefault();
-
     const { text } = this.state;
-
     if (text === "") {
       this.setState({
         error: true
       });
       return;
     }
-
     this.props.onAddNewTask({ text: text });
     this.setState({
       text: ""
@@ -48,13 +45,13 @@ export default class AddTask extends Component {
           error ? "item-add-form d-flex error" : "item-add-form d-flex"
         }`}
         onSubmit={this.submit}
-        onBlur={this.focusOut}
+        onBlur={this.clearError}
       >
         <input
           type="text"
           className="form-control"
           value={this.state.text}
-          onChange={this.labelChange}
+          onChange={this.changeText}
           placeholder="+ Add Task"
         />
         <button className="btn btn-info">Add</button>

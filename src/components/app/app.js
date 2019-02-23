@@ -2,8 +2,8 @@ import React, { Component } from "react";
 import "./app.css";
 
 import UserProjects from "../user-projects";
-import ApiService from "../../services/api-service";
 import UserLogin from "../user-login/user-login";
+import UserHeader from "../user-header/user-header";
 
 export default class App extends Component {
   state = {
@@ -11,16 +11,18 @@ export default class App extends Component {
     authorized: false
   };
 
-  apiService = new ApiService();
+  componentDidMount() {
+    if (localStorage.getItem("token")) {
+      this.setState({ authorized: true });
+    }
+  }
 
-  //   componentDidMount() {
-  //     this.getProjects();
-  //   }
   onLogin = () => {
     this.setState({
       authorized: true
     });
   };
+
   onLogout = () => {
     localStorage.removeItem("token");
     this.setState({
@@ -28,11 +30,6 @@ export default class App extends Component {
     });
   };
 
-  componentDidMount() {
-    if (localStorage.getItem("token")) {
-      this.setState({ authorized: true });
-    }
-  }
   render() {
     const { authorized } = this.state;
 
@@ -42,7 +39,8 @@ export default class App extends Component {
 
     return (
       <div>
-        <UserProjects onLogout={this.onLogout} />
+        <UserHeader onLogout={this.onLogout} />
+        <UserProjects />
       </div>
     );
   }

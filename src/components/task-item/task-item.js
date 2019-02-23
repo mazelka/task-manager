@@ -25,7 +25,7 @@ export default class TaskItem extends Component {
     });
   };
 
-  saveEditedLabel = () => {
+  saveEditedText = () => {
     const { editingValue } = this.state;
 
     if (editingValue !== "") {
@@ -43,15 +43,15 @@ export default class TaskItem extends Component {
 
   handleKeyPress = e => {
     if (e.key === "Enter") {
-      this.saveEditedLabel();
+      this.saveEditedText();
     }
   };
 
-  handleFocusOut = () => {
-    this.saveEditedLabel();
+  saveChanges = () => {
+    this.saveEditedText();
   };
 
-  priorityClassName = id => {
+  setPriorityClassName = id => {
     const { priority } = this.props;
     if (priority === id) return "btn btn-secondary";
     else return "btn btn-outline-secondary";
@@ -76,7 +76,6 @@ export default class TaskItem extends Component {
 
     const { isEditing, editingValue } = this.state;
     let itemClassNames = "task-item";
-    const date = new Date();
     let buttonClassNames = "btn btn-outline-success btn-sm";
 
     if (done) {
@@ -102,7 +101,7 @@ export default class TaskItem extends Component {
             value={editingValue}
             onChange={this.handleChange}
             onKeyPress={this.handleKeyPress}
-            onBlur={this.handleFocusOut}
+            onBlur={this.saveChanges}
           />
         ) : (
           <span className="task-item-label" onDoubleClick={this.toggleEdit}>
@@ -111,15 +110,16 @@ export default class TaskItem extends Component {
         )}
 
         <DatePicker
-          selected={deadline ? new Date(deadline) : date}
+          selected={deadline ? new Date(deadline) : deadline}
           onChange={onChangeDeadline}
+          placeholderText="Set deadline"
         />
 
         <div className="btn-group mr-2" role="group" aria-label="Second group">
           <button
             type="button"
             id="1"
-            className={this.priorityClassName(1)}
+            className={this.setPriorityClassName(1)}
             onClick={() => onChangePriority(1)}
           >
             !
@@ -127,7 +127,7 @@ export default class TaskItem extends Component {
           <button
             type="button"
             id="2"
-            className={this.priorityClassName(2)}
+            className={this.setPriorityClassName(2)}
             onClick={() => onChangePriority(2)}
           >
             !!
@@ -135,7 +135,7 @@ export default class TaskItem extends Component {
           <button
             type="button"
             id="3"
-            className={this.priorityClassName(3)}
+            className={this.setPriorityClassName(3)}
             onClick={() => onChangePriority(3)}
           >
             !!!

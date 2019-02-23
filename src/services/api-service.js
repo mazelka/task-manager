@@ -1,5 +1,5 @@
 export default class ApiService {
-  apiBase = "http://localhost:3000";
+  apiBase = "https://task-api-manager.herokuapp.com";
 
   headers = new Headers({
     "Content-Type": "application/json",
@@ -10,12 +10,12 @@ export default class ApiService {
     return {
       method: method,
       headers: this.headers,
-      body: this.body(body)
+      body: this.createBody(body)
     };
   };
 
   getResource = async url => {
-    const res = await fetch(`${this.apiBase}${url}`, {
+    const res = await fetch(`${this.apiBase}/${url}`, {
       headers: this.headers
     });
     if (!res.ok) {
@@ -26,7 +26,7 @@ export default class ApiService {
 
   putResource = async (url, body) => {
     const res = await fetch(
-      `${this.apiBase}${url}`,
+      `${this.apiBase}/${url}`,
       this.transformInit("PUT", body)
     );
     if (!res.ok) {
@@ -38,7 +38,7 @@ export default class ApiService {
 
   postResource = async (url, body) => {
     const res = await fetch(
-      `${this.apiBase}${url}`,
+      `${this.apiBase}/${url}`,
       this.transformInit("POST", body)
     );
     console.log(body);
@@ -50,18 +50,16 @@ export default class ApiService {
   };
 
   deleteResource = async url => {
-    const res = await fetch(`${this.apiBase}${url}`, {
+    const res = await fetch(`${this.apiBase}/${url}`, {
       method: "DELETE",
       headers: this.headers
     });
     if (!res.ok) {
       throw new Error(`Could not delete ${url}, received ${res.status}`);
     }
-    const content = await res.status;
-    return content;
   };
 
-  body = attr => {
+  createBody = attr => {
     return JSON.stringify({
       data: {
         attributes: attr
@@ -70,68 +68,58 @@ export default class ApiService {
   };
 
   createUser = async credentials => {
-    const res = await this.postResource(`/users/create`, credentials);
+    const res = await this.postResource(`users/create`, credentials);
     if (res.data) {
       return this.userLogin(credentials);
     } else {
-      console.log(res);
+      throw new Error(`Could not create user, received ${res.status}`);
     }
   };
 
   getProjectTasks = async id => {
-    const tasks = await this.getResource(`/projects/${id}/tasks`);
-    return this.normalizeTasks(tasks.data);
+    const { data } = await this.getResource(`projects/${id}/tasks`);
+    return this.normalizeTasks(data);
   };
 
   getProjects = async () => {
-    const projects = await this.getResource("/projects");
-    return this.normalizeProjects(projects.data);
+    const { data } = await this.getResource("projects");
+    return this.normalizeProjects(data);
   };
 
   updateTask = async (projectId, taskId, attribute) => {
-    const result = await this.putResource(
-      `/projects/${projectId}/tasks/${taskId}`,
+    const { data } = await this.putResource(
+      `projects/${projectId}/tasks/${taskId}`,
       attribute
     );
-    const newTask = this.transformTask(result.data);
-    return newTask;
+    return this.transformTask(data);
   };
 
   updateProject = async (id, attribute) => {
-    const result = await this.putResource(`/projects/${id}`, attribute);
-    const newProject = this.transformProject(result.data);
-    return newProject;
+    const { data } = await this.putResource(`projects/${id}`, attribute);
+    return this.transformProject(data);
   };
 
   postTask = async (item, id) => {
-    const result = await this.postResource(`/projects/${id}/tasks`, item);
-    const newTask = this.transformTask(result.data);
-    return newTask;
+    const { data } = await this.postResource(`projects/${id}/tasks`, item);
+    return this.transformTask(data);
   };
 
   postProject = async name => {
-    const result = await this.postResource(`/projects/`, name);
-    const newProject = this.transformProject(result.data);
-    return newProject;
+    const { data } = await this.postResource(`projects/`, name);
+    return this.transformProject(data);
   };
 
   deleteTask = async (projectId, taskId) => {
-    const result = await this.deleteResource(
-      `/projects/${projectId}/tasks/${taskId}`
-    );
-    return result;
+    await this.deleteResource(`projects/${projectId}/tasks/${taskId}`);
   };
 
   userLogin = async credentials => {
     console.log("api-service user login", credentials);
-    const token = this.postResource("/user_token", credentials);
-    return token;
+    return this.postResource("user_token", credentials);
   };
 
   deleteProject = async id => {
-    const url = `/projects/${id}`;
-    const result = await this.deleteResource(url);
-    return result;
+    await this.deleteResource(`projects/${id}`);
   };
 
   normalizeTasks = tasks => {

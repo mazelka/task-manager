@@ -6,8 +6,8 @@ export default class UserHeader extends Component {
   render() {
     const { onLogout } = this.props;
     return (
-      <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a className="navbar-brand" href="http://localhost:3001/#">
+      <nav className="navbar navbar-dark bg-dark">
+        <a className="navbar-brand" href="/">
           Hello Sunshine!
         </a>
         <button

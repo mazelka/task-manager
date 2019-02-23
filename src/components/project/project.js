@@ -9,7 +9,12 @@ export default class Project extends Component {
   state = {
     tasks: []
   };
+
   apiService = new ApiService();
+
+  componentDidMount() {
+    this.loadProject();
+  }
 
   onTasksLoaded = tasks => {
     this.setState({ tasks });
@@ -67,10 +72,6 @@ export default class Project extends Component {
     const { id } = this.props.project.id;
     await this.getProjectTasks(id);
   };
-
-  componentDidMount() {
-    this.loadProject();
-  }
 
   addTask = async text => {
     const { project } = this.props;
@@ -133,7 +134,7 @@ export default class Project extends Component {
     }
   };
 
-  onChangePriority = (id, value) => {
+  changePriority = (id, value) => {
     this.updateTask(id, { priority: value });
   };
 
@@ -156,7 +157,7 @@ export default class Project extends Component {
     return (
       <div className="task-app">
         <ProjectHeader
-          text={project.name}
+          name={project.name}
           onUpdate={name => onUpdate(name)}
           onDelete={onDelete}
         />
@@ -166,7 +167,7 @@ export default class Project extends Component {
           onDelete={this.deleteTask}
           onToggleDone={this.handleToggleDone}
           onChangeDeadline={this.handleChangeDeadline}
-          onChangePriority={this.onChangePriority}
+          onChangePriority={this.changePriority}
         />
         <AddTask onAddNewTask={this.addTask} />
       </div>

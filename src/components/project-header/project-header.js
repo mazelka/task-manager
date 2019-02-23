@@ -16,24 +16,21 @@ export default class ProjectHeader extends Component {
   toggleEdit = () => {
     this.setState({
       isEditing: true,
-      editingValue: this.props.text
+      editingValue: this.props.name
     });
   };
 
   handleChange = e => {
     const editingValue = e.target.value;
-
     this.setState({
       editingValue
     });
   };
 
-  saveEditedLabel = () => {
+  saveName = () => {
     const { editingValue } = this.state;
     if (editingValue !== "") {
-      console.log("saveEditedllbl");
       this.props.onUpdate({ name: editingValue });
-
       this.setState({
         isEditing: false,
         editingValue: null
@@ -43,11 +40,20 @@ export default class ProjectHeader extends Component {
 
   handleKeyPress = e => {
     if (e.key === "Enter") {
-      this.saveEditedLabel();
+      this.saveName();
     }
   };
 
-  handleFocusOut = () => {
+  handleDelete = () => {
+    if (
+      window.confirm(
+        "Are you sure you want to delete this project and all its tasks?"
+      )
+    )
+      this.props.onDelete();
+  };
+
+  cancelEdit = () => {
     this.setState({
       isEditing: false
     });
@@ -60,10 +66,10 @@ export default class ProjectHeader extends Component {
   }
 
   render() {
-    const { text, onDelete } = this.props;
+    const { name } = this.props;
     const { isEditing, editingValue } = this.state;
 
-    if (!text) {
+    if (!name) {
       return <Spinner />;
     }
 
@@ -77,25 +83,18 @@ export default class ProjectHeader extends Component {
             value={editingValue}
             onChange={this.handleChange}
             onKeyPress={this.handleKeyPress}
-            onBlur={this.handleFocusOut}
+            onBlur={this.cancelEdit}
           />
         ) : (
           <span className="task-item-label" onDoubleClick={this.toggleEdit}>
-            {text}
+            {name}
           </span>
         )}
 
         <button
           type="button"
           className="btn btn-primary my-2 my-sm-0"
-          onClick={() => {
-            if (
-              window.confirm(
-                "Are you sure you want to delete this project and all its tasks?"
-              )
-            )
-              onDelete();
-          }}
+          onClick={this.handleDelete}
         >
           <i className="fa fa-trash-o" />
         </button>
