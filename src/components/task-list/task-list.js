@@ -4,6 +4,10 @@ import TaskItem from "../task-item";
 import "./task-list.css";
 
 export default class TaskList extends Component {
+  state = {
+    showCustomizeTask: false
+  };
+
   render() {
     const {
       tasks,
@@ -13,6 +17,7 @@ export default class TaskList extends Component {
       onChangeDeadline,
       onChangePriority
     } = this.props;
+
     const elements = tasks.map(({ id, ...item }) => {
       return (
         <li key={id} className="list-group-item">

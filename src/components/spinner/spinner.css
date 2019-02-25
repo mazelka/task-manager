@@ -85,7 +85,7 @@
 }
 
 .lds-css {
-  display: inline;
-  align-content: center;
-  align-self: center;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 400px;
 }

@@ -7,7 +7,8 @@ import "react-datepicker/dist/react-datepicker.css";
 export default class TaskItem extends Component {
   state = {
     isEditing: false,
-    editingValue: null
+    editingValue: null,
+    showCustomizeTask: false
   };
   input = React.createRef();
 
@@ -53,8 +54,28 @@ export default class TaskItem extends Component {
 
   setPriorityClassName = id => {
     const { priority } = this.props;
-    if (priority === id) return "btn btn-secondary";
-    else return "btn btn-outline-secondary";
+    if (priority === id) return "btn btn-secondary btn-sm";
+    else return "btn btn-outline-secondary btn-sm";
+  };
+
+  showCustomizeTaskOptions = () => {
+    const { showCustomizeTask } = this.state;
+    if (!showCustomizeTask) {
+      this.setState({
+        showCustomizeTask: true
+      });
+    }
+    console.log(this.state.showCustomizeTask);
+  };
+
+  hideCustomizeTaskOptions = () => {
+    const { showCustomizeTask } = this.state;
+    if (showCustomizeTask) {
+      this.setState({
+        showCustomizeTask: false
+      });
+    }
+    console.log(this.state.showCustomizeTask);
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -74,7 +95,7 @@ export default class TaskItem extends Component {
       onChangePriority
     } = this.props;
 
-    const { isEditing, editingValue } = this.state;
+    const { isEditing, editingValue, showCustomizeTask } = this.state;
     let itemClassNames = "task-item";
     let buttonClassNames = "btn btn-outline-success btn-sm";
 
@@ -84,71 +105,84 @@ export default class TaskItem extends Component {
     }
 
     return (
-      <div className={itemClassNames}>
-        <button
-          type="button"
-          className={buttonClassNames}
-          onClick={onToggleDone}
-        >
-          <i className="fa fa-check" />
-        </button>
-
-        {isEditing ? (
-          <input
-            ref={this.input}
-            type="text"
-            className="form-control editing-input"
-            value={editingValue}
-            onChange={this.handleChange}
-            onKeyPress={this.handleKeyPress}
-            onBlur={this.saveChanges}
-          />
-        ) : (
-          <span className="task-item-label" onDoubleClick={this.toggleEdit}>
-            {text}
-          </span>
-        )}
-
-        <DatePicker
-          selected={deadline ? new Date(deadline) : deadline}
-          onChange={onChangeDeadline}
-          placeholderText="Set deadline"
-        />
-
-        <div className="btn-group mr-2" role="group" aria-label="Second group">
+      <div
+      // onMouseEnter={this.showCustomizeTaskOptions}
+      // onMouseLeave={this.hideCustomizeTaskOptions}
+      >
+        <div className={itemClassNames}>
           <button
             type="button"
-            id="1"
-            className={this.setPriorityClassName(1)}
-            onClick={() => onChangePriority(1)}
+            className={buttonClassNames}
+            onClick={onToggleDone}
           >
-            !
+            <i className="fa fa-check" />
           </button>
-          <button
-            type="button"
-            id="2"
-            className={this.setPriorityClassName(2)}
-            onClick={() => onChangePriority(2)}
-          >
-            !!
-          </button>
-          <button
-            type="button"
-            id="3"
-            className={this.setPriorityClassName(3)}
-            onClick={() => onChangePriority(3)}
-          >
-            !!!
-          </button>
+
+          {isEditing ? (
+            <input
+              ref={this.input}
+              type="text"
+              className="form-control editing-input"
+              value={editingValue}
+              onChange={this.handleChange}
+              onKeyPress={this.handleKeyPress}
+              onBlur={this.saveChanges}
+            />
+          ) : (
+            <span className="task-item-label" onDoubleClick={this.toggleEdit}>
+              {text}
+            </span>
+          )}
+          {/* {showCustomizeTask ? ( */}
+          <div className="customize-task">
+            <DatePicker
+              selected={deadline ? new Date(deadline) : deadline}
+              onChange={onChangeDeadline}
+              timeCaption="Time"
+              placeholderText="Set deadline"
+            />
+
+            <div
+              className="btn-group mr-2"
+              role="group"
+              aria-label="Second group"
+            >
+              <button
+                type="button"
+                id="1"
+                className={this.setPriorityClassName(1)}
+                onClick={() => onChangePriority(1)}
+              >
+                <span> ! </span>
+              </button>
+              <button
+                type="button"
+                id="2"
+                className={this.setPriorityClassName(2)}
+                onClick={() => onChangePriority(2)}
+              >
+                !!
+              </button>
+              <button
+                type="button"
+                id="3"
+                className={this.setPriorityClassName(3)}
+                onClick={() => onChangePriority(3)}
+              >
+                !!!
+              </button>
+            </div>
+
+            <button
+              type="button"
+              className="btn btn-outline-danger btn-sm"
+              onClick={onDelete}
+            >
+              <i className="fa fa-trash-o" />
+            </button>
+          </div>
+          {/* ) : null} */}
         </div>
-
-        <button
-          type="button"
-          className="btn btn-outline-danger btn-sm"
-          onClick={onDelete}
-        >
-          <i className="fa fa-trash-o" />
-        </button>
       </div>
     );
   }

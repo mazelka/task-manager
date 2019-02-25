@@ -101,7 +101,7 @@ export default class UserLogin extends Component {
     return (
       <div className="form-group user-login">
         <div className="list-group-item list-group-item-action active project-item">
-          <span>Sign In to manage your tasks</span>
+          <span>Enter your credentials</span>
         </div>
         {error ? <ErrorIndicator /> : null}
         <label className="form-control-label">Enter your email</label>

@@ -9,7 +9,7 @@ import ErrorIndicator from "../error-indicator/error-indicator";
 export default class UserProjects extends Component {
   state = {
     error: false,
-    loading: false,
+    loading: true,
     projects: []
   };
 
@@ -54,7 +54,7 @@ export default class UserProjects extends Component {
   };
 
   onProjectLoaded = projects => {
-    this.setState({ projects });
+    this.setState({ projects, loading: false });
   };
 
   onProjectAdded = newProject => {
@@ -96,13 +96,15 @@ export default class UserProjects extends Component {
     try {
       const projects = await this.apiService.getProjects();
       this.onProjectLoaded(projects);
+      console.log("I get projects");
     } catch (e) {
       this.onError(e);
     }
   };
 
   render() {
-    const { projects, error } = this.state;
+    const { projects, error, loading } = this.state;
+    const errorMessage = error ? <ErrorIndicator /> : null;
 
     const elements = projects.map(project => {
       return (
@@ -116,15 +118,19 @@ export default class UserProjects extends Component {
       );
     });
 
+    const userProjects = (
+      <div className="project-app">
+        {elements}
+        <div className="add-project">
+          <AddProject onAddNewProject={this.addNewProject} />
+        </div>
+      </div>
+    );
+
     return (
       <div>
-        {error ? <ErrorIndicator /> : null}
-        <div className="project-app">
-          {elements}
-          <div className="add-project">
-            <AddProject onAddNewProject={this.addNewProject} />
-          </div>
-        </div>
+        {errorMessage}
+        {loading ? <Spinner /> : userProjects}
       </div>
     );
   }

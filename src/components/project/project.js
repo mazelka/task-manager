@@ -56,18 +56,6 @@ export default class Project extends Component {
     };
   };
 
-  changeDeadline = (id, date) => {
-    const { tasks } = this.state;
-    const index = tasks.findIndex(el => el.id === id);
-    const item = tasks[index];
-    const res = {
-      ...item,
-      deadline: date
-    };
-    console.log(res);
-    return res;
-  };
-
   loadProject = async () => {
     const { id } = this.props.project.id;
     await this.getProjectTasks(id);
@@ -121,7 +109,12 @@ export default class Project extends Component {
   };
 
   handleChangeDeadline = async (id, date) => {
-    this.updateTask(id, { deadline: date });
+    console.log("before call", {
+      deadline: date.toJSON()
+    });
+    this.updateTask(id, {
+      deadline: date
+    });
   };
 
   deleteTask = async id => {
