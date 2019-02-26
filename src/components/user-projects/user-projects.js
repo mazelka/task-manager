@@ -23,7 +23,6 @@ export default class UserProjects extends Component {
     try {
       const updatedProject = await this.apiService.updateProject(id, name);
       this.onProjectsUpdated(updatedProject);
-      console.log(this.state.error);
     } catch (e) {
       this.onError(e);
     }
@@ -96,7 +95,6 @@ export default class UserProjects extends Component {
     try {
       const projects = await this.apiService.getProjects();
       this.onProjectLoaded(projects);
-      console.log("I get projects");
     } catch (e) {
       this.onError(e);
     }

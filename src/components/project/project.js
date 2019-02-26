@@ -40,7 +40,6 @@ export default class Project extends Component {
     const { project } = this.props;
     try {
       const res = await this.apiService.getProjectTasks(project.id);
-      console.log(project.id);
       this.onTasksLoaded(res);
     } catch (e) {
       this.props.onError(e);
@@ -92,7 +91,6 @@ export default class Project extends Component {
   updateTask = async (id, attribute) => {
     const { project } = this.props;
     try {
-      console.log(attribute);
       const newTask = await this.apiService.updateTask(
         project.id,
         id,
@@ -109,11 +107,11 @@ export default class Project extends Component {
   };
 
   handleChangeDeadline = async (id, date) => {
-    console.log("before call", {
-      deadline: date.toJSON()
-    });
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
     this.updateTask(id, {
-      deadline: date
+      deadline: `${day}/${month}/${year}`
     });
   };
 

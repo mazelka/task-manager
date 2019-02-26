@@ -58,26 +58,6 @@ export default class TaskItem extends Component {
     else return "btn btn-outline-secondary btn-sm";
   };
 
-  showCustomizeTaskOptions = () => {
-    const { showCustomizeTask } = this.state;
-    if (!showCustomizeTask) {
-      this.setState({
-        showCustomizeTask: true
-      });
-    }
-    console.log(this.state.showCustomizeTask);
-  };
-
-  hideCustomizeTaskOptions = () => {
-    const { showCustomizeTask } = this.state;
-    if (showCustomizeTask) {
-      this.setState({
-        showCustomizeTask: false
-      });
-    }
-    console.log(this.state.showCustomizeTask);
-  };
-
   componentDidUpdate(prevProps, prevState) {
     if (this.state.isEditing && !prevState.isEditing) {
       this.input.current.focus();
@@ -95,7 +75,7 @@ export default class TaskItem extends Component {
       onChangePriority
     } = this.props;
 
-    const { isEditing, editingValue, showCustomizeTask } = this.state;
+    const { isEditing, editingValue } = this.state;
     let itemClassNames = "task-item";
     let buttonClassNames = "btn btn-outline-success btn-sm";
 
@@ -105,10 +85,7 @@ export default class TaskItem extends Component {
     }
 
     return (
-      <div
-      // onMouseEnter={this.showCustomizeTaskOptions}
-      // onMouseLeave={this.hideCustomizeTaskOptions}
-      >
+      <div>
         <div className={itemClassNames}>
           <button
             type="button"
@@ -133,7 +110,6 @@ export default class TaskItem extends Component {
               {text}
             </span>
           )}
-          {/* {showCustomizeTask ? ( */}
           <div className="customize-task">
             <DatePicker
               selected={deadline ? new Date(deadline) : deadline}
@@ -181,7 +157,6 @@ export default class TaskItem extends Component {
               <i className="fa fa-trash-o" />
             </button>
           </div>
-          {/* ) : null} */}
         </div>
       </div>
     );

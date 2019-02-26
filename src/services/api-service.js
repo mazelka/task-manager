@@ -41,7 +41,6 @@ export default class ApiService {
       `${this.apiBase}/${url}`,
       this.transformInit("POST", body)
     );
-    console.log(body);
     if (!res.ok) {
       throw new Error(`Could not post to ${url}, received ${res.status}`);
     }
@@ -114,7 +113,6 @@ export default class ApiService {
   };
 
   userLogin = async credentials => {
-    console.log("api-service user login", credentials);
     return this.postResource("user_token", credentials);
   };
 
